@@ -32,17 +32,20 @@ void tampilMenu(){
     cout << "2. Lihat Data Anomali\n";
     cout << "3. Update Data Anomali\n";
     cout << "4. Hapus Data Anomali\n";
-    cout << "5. Keluar Program\n";
+    cout << "5. Sorting Nama Ascending\n";
+    cout << "6. Sorting ID Descending\n";
+    cout << "7. Sorting Nama Descending\n";
+    cout << "8. Cari ID Anomali\n";
+    cout << "9. Cari Nama Anomali\n";
+    cout << "10. Keluar Program\n";
     cout << "-------------------------------------\n";
 }
 
-bool login(User user){
-
+bool login(User &user){
     string username,password;
     int percobaan = 0;
 
     while(percobaan < 3){
-
         cout << "=========== LOGIN SISTEM ============\n";
         cout << "Username : ";
         cin >> username;
@@ -65,12 +68,10 @@ bool login(User user){
     return false;
 }
 
-void tambahData(Anomali data[], int &jumlah){
-
+void tambahData(Anomali *data, int &jumlah){
     cout << "\n===== TAMBAH DATA ANOMALI =====\n";
 
     if(jumlah < 50){
-
         cout << "Masukkan ID Anomali   : ";
         cin >> data[jumlah].id;
         cin.ignore();
@@ -79,7 +80,6 @@ void tambahData(Anomali data[], int &jumlah){
         getline(cin,data[jumlah].nama);
 
         jumlah++;
-
         pesan("Data berhasil ditambahkan.");
     }
     else{
@@ -87,8 +87,7 @@ void tambahData(Anomali data[], int &jumlah){
     }
 }
 
-void tampilDataRekursif(Anomali data[], int index, int jumlah){
-
+void tampilDataRekursif(Anomali *data, int index, int jumlah){
     if(index == jumlah){
         return;
     }
@@ -101,8 +100,7 @@ void tampilDataRekursif(Anomali data[], int index, int jumlah){
     tampilDataRekursif(data,index+1,jumlah);
 }
 
-void updateData(Anomali data[], int jumlah){
-
+void updateData(Anomali *data, int jumlah){
     cout << "\n===== UPDATE DATA =====\n";
 
     int cari;
@@ -130,8 +128,7 @@ void updateData(Anomali data[], int jumlah){
     pesan("Data berhasil diperbarui.");
 }
 
-void hapusData(Anomali data[], int &jumlah){
-
+void hapusData(Anomali *data, int &jumlah){
     cout << "\n===== HAPUS DATA =====\n";
 
     int cari;
@@ -157,12 +154,127 @@ void hapusData(Anomali data[], int &jumlah){
     }
 
     jumlah--;
-
     pesan("Data berhasil dihapus.");
 }
 
-int main(){
+void sortingNamaAscending(Anomali *data, int jumlah){
+    for(int i=0; i<jumlah-1; i++){
+        for(int j=0; j<jumlah-1-i; j++){
+            if(data[j].nama > data[j+1].nama){
+                Anomali temp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = temp;
+            }
+        }
+    }
 
+    pesan("Data berhasil diurutkan berdasarkan nama ascending.");
+}
+
+void sortingIdDescending(Anomali *data, int jumlah){
+    for(int i=0; i<jumlah-1; i++){
+        for(int j=0; j<jumlah-1-i; j++){
+            if(data[j].id < data[j+1].id){
+                Anomali temp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = temp;
+            }
+        }
+    }
+
+    pesan("Data berhasil diurutkan berdasarkan ID descending.");
+}
+
+void sortingNamaDescending(Anomali *data, int jumlah){
+    for(int i=0; i<jumlah-1; i++){
+        for(int j=0; j<jumlah-1-i; j++){
+            if(data[j].nama < data[j+1].nama){
+                Anomali temp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = temp;
+            }
+        }
+    }
+
+    pesan("Data berhasil diurutkan berdasarkan nama descending.");
+}
+
+void cariIdBinary(Anomali *data, int jumlah){
+    if(jumlah == 0){
+        pesan("Belum ada data.");
+        return;
+    }
+
+    for(int i=0; i<jumlah-1; i++){
+        for(int j=0; j<jumlah-1-i; j++){
+            if(data[j].id > data[j+1].id){
+                Anomali temp = data[j];
+                data[j] = data[j+1];
+                data[j+1] = temp;
+            }
+        }
+    }
+
+    int cari;
+    cout << "Masukkan ID yang dicari : ";
+    cin >> cari;
+
+    int kiri = 0;
+    int kanan = jumlah - 1;
+    bool ditemukan = false;
+
+    while(kiri <= kanan){
+        int tengah = (kiri + kanan) / 2;
+
+        if(data[tengah].id == cari){
+            cout << "Data ditemukan!" << endl;
+            cout << "ID Anomali   : " << data[tengah].id << endl;
+            cout << "Nama Anomali : " << data[tengah].nama << endl;
+            ditemukan = true;
+            break;
+        }
+        else if(cari < data[tengah].id){
+            kanan = tengah - 1;
+        }
+        else{
+            kiri = tengah + 1;
+        }
+    }
+
+    if(!ditemukan){
+        pesan("Data tidak ditemukan.");
+    }
+}
+
+void cariNamaLinear(Anomali *data, int jumlah){
+    if(jumlah == 0){
+        pesan("Belum ada data.");
+        return;
+    }
+
+    string cari;
+    bool ditemukan = false;
+
+    cin.ignore();
+
+    cout << "Masukkan nama yang dicari : ";
+    getline(cin, cari);
+
+    for(int i=0; i<jumlah; i++){
+        if(data[i].nama == cari){
+            cout << "Data ditemukan!" << endl;
+            cout << "ID Anomali   : " << data[i].id << endl;
+            cout << "Nama Anomali : " << data[i].nama << endl;
+            ditemukan = true;
+        }
+    }
+
+    if(!ditemukan){
+        pesan("Data tidak ditemukan.");
+    }
+}
+
+int main(){
     cout << "=====================================\n";
     cout << "     SISTEM MANAJEMEN DATA ANOMALI   \n";
     cout << "=====================================\n";
@@ -174,7 +286,6 @@ int main(){
     int menu;
 
     do{
-
         tampilMenu();
 
         cout << "Pilih menu : ";
@@ -187,14 +298,12 @@ int main(){
             break;
 
         case 2:
-
             if(jumlah == 0){
                 pesan("Belum ada data.");
             }
             else{
                 tampilDataRekursif(anomali,0,jumlah);
             }
-
             break;
 
         case 3:
@@ -206,6 +315,26 @@ int main(){
             break;
 
         case 5:
+            sortingNamaAscending(anomali,jumlah);
+            break;
+
+        case 6:
+            sortingIdDescending(anomali,jumlah);
+            break;
+
+        case 7:
+            sortingNamaDescending(anomali,jumlah);
+            break;
+
+        case 8:
+            cariIdBinary(anomali,jumlah);
+            break;
+
+        case 9:
+            cariNamaLinear(anomali,jumlah);
+            break;
+
+        case 10:
             pesan("Terima kasih telah menggunakan program.");
             break;
 
@@ -213,7 +342,7 @@ int main(){
             pesan("Menu tidak tersedia.");
         }
 
-    }while(menu != 5);
+    }while(menu != 10);
 
     return 0;
 }
